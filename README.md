@@ -1,61 +1,61 @@
 # Pacman Imitation Learning
 
-Projet d'apprentissage supervisé pour entraîner un agent Pacman à imiter un expert via un réseau de neurones MLP.
+Supervised learning project to train a Pacman agent to imitate an expert using an MLP neural network.
 
-## Vue d'ensemble
+## Overview
 
-Ce projet implémente un système d'imitation learning où un réseau de neurones apprend à jouer à Pacman en imitant les actions d'un expert. Le réseau prend en entrée l'état du jeu (32 features) et prédit l'action à effectuer parmi 5 possibles : NORTH, SOUTH, EAST, WEST, STOP.
+This project implements an imitation learning system where a neural network learns to play Pacman by imitating expert actions. The network takes the game state (32 features) as input and predicts one of 5 possible actions: NORTH, SOUTH, EAST, WEST, STOP.
 
-**Résultats obtenus :**
-- Accuracy sur le test set : ~87-88%
-- Architecture : MLP (32 → 128 → 64 → 32 → 5)
-- Dataset : 15 018 exemples d'états-actions
-- Entraînement : ~150 epochs
+**Results:**
+- Test set accuracy: ~87-88%
+- Architecture: MLP (32 → 128 → 64 → 32 → 5)
+- Dataset: 15,018 state-action examples
+- Training: ~150 epochs
 
 ## Installation
 
-**Prérequis :** Python 3.8+, PyTorch 2.0+
+**Requirements:** Python 3.8+, PyTorch 2.0+
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## Utilisation
+## Usage
 
-**Entraîner le modèle :**
+**Train the model:**
 ```bash
 python train.py
 ```
 
-**Visualiser l'agent jouer :**
+**Watch the agent play:**
 ```bash
 python run.py
 ```
 
-**Générer le fichier de soumission :**
+**Generate submission file:**
 ```bash
 python write_submission.py
 ```
 
-## Structure du projet
+## Project Structure
 
 ```
 pacman_imitation_learning/
 ├── datasets/
-│   ├── pacman_dataset.pkl      # Dataset d'entraînement
-│   └── pacman_test.pkl         # Dataset de test
-├── pacman_module/              # Moteur de jeu (ne pas modifier)
+│   ├── pacman_dataset.pkl      # Training dataset
+│   └── pacman_test.pkl         # Test dataset
+├── pacman_module/              # Game engine (do not modify)
 ├── data.py                     # Feature engineering + Dataset
-├── architecture.py             # Réseau de neurones MLP
-├── train.py                    # Script d'entraînement
-├── pacmanagent.py              # Agent utilisant le modèle
-├── run.py                      # Visualisation du jeu
-├── write_submission.py         # Génération du CSV
-├── pacman_model.pth            # Modèle entraîné
-└── submission.csv              # Prédictions pour Gradescope
+├── architecture.py             # MLP neural network
+├── train.py                    # Training script
+├── pacmanagent.py              # Agent using the model
+├── run.py                      # Game visualization
+├── write_submission.py         # CSV generation
+├── pacman_model.pth            # Trained model
+└── submission.csv              # Predictions for Gradescope
 ```
 
-## Architecture du réseau
+## Network Architecture
 
 ```
 Input (32)  →  Linear+BN+GELU+Dropout (128)
@@ -64,35 +64,35 @@ Input (32)  →  Linear+BN+GELU+Dropout (128)
             →  Linear (5)
 ```
 
-Chaque couche cachée : Linear → BatchNorm → GELU → Dropout (0.3)
+Each hidden layer: Linear → BatchNorm → GELU → Dropout (0.3)
 
 ## Features (32)
 
-| Catégorie | Nb | Description |
-|-----------|:--:|-------------|
-| Position | 2 | X et Y normalisées de Pacman |
-| Ghost | 7 | Direction X/Y vers fantôme, distance Manhattan, flags directionnels (N/S/E/W) |
-| Food | 9 | Nb pastilles, distance moyenne, direction et distance vers la plus proche, flags directionnels |
-| Maze | 9 | Distance aux 4 murs, distance au centre X/Y, flags coin/couloir/espace ouvert |
-| Legal | 5 | Flags pour chaque action légale |
+| Category | Count | Description |
+|----------|:-----:|-------------|
+| Position | 2 | Pacman's normalized X and Y |
+| Ghost | 7 | Direction X/Y to ghost, Manhattan distance, directional flags (N/S/E/W) |
+| Food | 9 | Food count, average distance, direction and distance to closest, directional flags |
+| Maze | 9 | Distance to 4 walls, distance to center X/Y, corner/corridor/open space flags |
+| Legal | 5 | Flags for each legal action |
 
-Toutes les features sont normalisées (positions par dimensions du labyrinthe, distances par distance Manhattan maximale).
+All features are normalized (positions by maze dimensions, distances by maximum Manhattan distance).
 
-## Hyperparamètres
+## Hyperparameters
 
-| Paramètre | Valeur |
-|-----------|--------|
+| Parameter | Value |
+|-----------|-------|
 | Batch size | 128 |
 | Learning rate | 1e-3 |
 | Epochs | 150 |
 | Dropout | 0.3 |
 | Optimizer | Adam |
 | Loss | CrossEntropyLoss |
-| Split train/test | 80/20 |
+| Train/test split | 80/20 |
 
-## Personnalisation
+## Customization
 
-**Modifier l'architecture** (dans `architecture.py`) :
+**Modify the architecture** (in `architecture.py`):
 ```python
 PacmanNetwork(
     input_features=32,
@@ -103,44 +103,44 @@ PacmanNetwork(
 )
 ```
 
-**Ajouter des features** (dans `data.py`) : modifier `state_to_tensor()` et mettre à jour `input_features` dans `architecture.py`.
+**Add features** (in `data.py`): modify `state_to_tensor()` and update `input_features` in `architecture.py`.
 
 ## Troubleshooting
 
-| Problème | Solution |
-|----------|----------|
-| Pas de convergence | Vérifier la normalisation, réduire le learning rate |
-| Accuracy ~50-60% | Vérifier le dataset et le mapping des actions |
-| Overfitting | Augmenter le dropout, réduire la taille du réseau |
-| Pas d'affichage | Installer tkinter (`sudo apt-get install python3-tk`) |
+| Problem | Solution |
+|---------|----------|
+| No convergence | Check normalization, reduce learning rate |
+| Accuracy ~50-60% | Check dataset and action mapping |
+| Overfitting | Increase dropout, reduce network size |
+| No display | Install tkinter (`sudo apt-get install python3-tk`) |
 
 ## FAQ
 
-**Pourquoi un MLP et pas un CNN ?**
-L'input est un vecteur 1D de features extraites manuellement, sans structure spatiale 2D. Un MLP est adapté pour ce type de données tabulaires.
+**Why an MLP instead of a CNN?**
+The input is a 1D vector of manually extracted features with no 2D spatial structure. An MLP is well-suited for this type of tabular data.
 
-**Pourquoi GELU ?**
-GELU est une activation plus smooth que ReLU, standard dans les architectures modernes (BERT, GPT). Elle pondère les inputs par leur valeur plutôt que de les filtrer par leur signe.
+**Why GELU?**
+GELU is a smoother activation than ReLU, standard in modern architectures (BERT, GPT). It weights inputs by their value rather than gating them by their sign.
 
-**Pourquoi normaliser ?**
-Les réseaux convergent mieux quand toutes les features sont dans la même échelle. Sans normalisation, les grandes valeurs dominent le gradient.
+**Why normalize?**
+Neural networks converge better when all features are on the same scale. Without normalization, large values dominate the gradient.
 
-**Pourquoi l'accuracy plafonne à ~88% ?**
-Dans certaines situations, plusieurs actions sont également valides. Le réseau peut prédire différemment de l'expert tout en étant correct.
+**Why does accuracy plateau at ~88%?**
+In some situations, multiple actions are equally valid. The network may predict differently from the expert while still being correct.
 
-**Le modèle généralise-t-il ?**
-Oui. Les features sont normalisées par la taille du labyrinthe, donc le modèle apprend des patterns généraux (fuir les fantômes, aller vers la nourriture).
+**Does the model generalize?**
+Yes. Features are normalized by maze size, so the model learns general patterns (flee ghosts, go toward food) rather than memorizing a specific layout.
 
 ## Documentation
 
-Pour une explication détaillée, voir `explication.txt`.
+For a detailed explanation, see `explication.txt`.
 
-## Références
+## References
 
 - [1] Ioffe & Szegedy (2015) - Batch Normalization
 - [2] Hendrycks & Gimpel (2016) - GELU
 - [3] Srivastava et al. (2014) - Dropout
 - [4] Kingma & Ba (2015) - Adam Optimizer
-- [5] LeCun et al. (1998) - MNIST (principes de classification)
+- [5] LeCun et al. (1998) - MNIST (classification principles)
 
-Voir `Bibliography.txt` pour les citations complètes.
+See `Bibliography.txt` for full citations.
