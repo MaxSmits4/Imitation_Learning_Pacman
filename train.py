@@ -23,7 +23,9 @@ class Pipeline(nn.Module):
         self.dataset = PacmanDataset(self.path)
         self.model = PacmanNetwork()
 
-        self.criterion = self.model.criterion
+        # We preferred to put the loss calculation in the architecture 
+        # file to logically group together the functions inherent to the model
+        #self.criterion = self.model.criterion 
         self.optimizer = Adam(self.model.parameters(), lr=1e-3)
 
     def train(self):
