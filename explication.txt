@@ -1455,7 +1455,10 @@ model.eval() change le comportement de certains modules:
 
    Dropout en eval: il est off
 
-   BatchNorm:n’utilise plus μ/σ² du batch pour un neuronne 
+   BatchNorm: il est off
+   N’utilise plus μ/σ² du batch pour un neuronne donc plus batchnorm 
+   mais running moy et running var qui ont été calculé pendant le training. 
+   C'est cettte fois ci des valeurs fixe car les valeurs de tout le dataset et pas des batch. 
 
 
 Étape 2 — FORWARD SANS GRADIENTS

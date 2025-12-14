@@ -69,11 +69,7 @@ def state_to_tensor(state: object) -> torch.Tensor:
     n_food = float(len(food_positions))  # 1
 
     if food_positions:
-        # Average distance to all food
-        avg_food_dist = (
-            sum(abs(pac_pos_x - fx) + abs(pac_pos_y - fy)
-                for fx, fy in food_positions) / len(food_positions)
-        )  # 2
+
         # Find closest food
         distances_to_all_foods = []
         for fx, fy in food_positions:
@@ -125,7 +121,11 @@ def state_to_tensor(state: object) -> torch.Tensor:
     dist_west = dist_until_wall(pac_pos_x, pac_pos_y, -1, 0, W)  # 6
 
     legal_actions = state.getLegalPacmanActions()
-    num_legal_moves = len([a for a in legal_actions if a != Directions.STOP])
+
+    num_legal_moves = 0
+    for a in legal_actions:
+        if a != Directions.STOP:
+            num_legal_moves += 1
 
     # Corner = 1-2 legal moves !STOP
     is_corner = 1.0 if num_legal_moves <= 2 else 0.0  # 7
@@ -164,8 +164,7 @@ def state_to_tensor(state: object) -> torch.Tensor:
         ghost_in_east,
         ghost_in_west,
         # Food (9)
-        n_food / 8.0,  # Number of food remaining (normalized by actual max=8)
-        avg_food_dist / float(max_manhattan_dist),
+        n_food / 8.0,  # Number of food remaining normalized by max=8)
         dist_to_food_x / float(maze_W),
         dist_to_food_y / float(maze_H),
         closest_food_dist / float(max_manhattan_dist),
@@ -191,7 +190,7 @@ def state_to_tensor(state: object) -> torch.Tensor:
 
 
 def dist_until_wall(x, y, dx, dy, W):
-    """Calculate distance to wall in given direction."""
+    """Calculate distance to wall in given direction"""
     distance = 0
     while True:
         x += dx

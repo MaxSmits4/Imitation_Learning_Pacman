@@ -9,16 +9,14 @@ from pacman_module.ghostAgents import SmartyGhost
 from architecture import PacmanNetwork
 from pacmanagent import PacmanAgent
 
-SEED = 128
+SEED = 42
 random.seed(SEED)
 np.random.seed(SEED)
-torch.manual_seed(SEED)
 
 path_to_saved_model = "pacman_model.pth"
 
 model = PacmanNetwork()
-state_dict = torch.load(path_to_saved_model, weights_only=True)
-model.load_state_dict(state_dict)
+model.load_state_dict(torch.load(path_to_saved_model, map_location="cpu"))
 model.eval()
 
 pacman_agent = PacmanAgent(model)

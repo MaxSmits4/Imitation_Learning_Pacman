@@ -9,13 +9,13 @@ import torch.nn as nn
 class PacmanNetwork(nn.Module):
     """
     MLP for predicting Pacman actions from game state
-    32 → [128 → 64 → 32] → 5
+    31 → [128 → 64 → 32] → 5
     H layers: Linear → BatchNorm → GELU → Dropout
     """
 
     def __init__(
         self,
-        input_features=32,
+        input_features=31,
         num_actions=5,
         hidden_dims=[128, 64, 32],
         activation=nn.GELU(),
