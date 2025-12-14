@@ -17,13 +17,21 @@ torch.manual_seed(SEED)
 
 class Pipeline(nn.Module):
     def __init__(self, path):
+        """
+        Initialize your training pipeline.
+
+        Arguments:
+            path: The file path to the pickled dataset.
+        """
         super().__init__()
 
         self.path = path
         self.dataset = PacmanDataset(self.path)
         self.model = PacmanNetwork()
 
-        self.criterion = self.model.criterion
+        #We preferred to put the loss calculation in the architecture
+        #file to logically group together the functions inherent to the model
+        #self.criterion = self.model.criterion 
         self.optimizer = Adam(self.model.parameters(), lr=1e-3)
 
     def train(self):
@@ -33,11 +41,8 @@ class Pipeline(nn.Module):
         train_size = int(0.8 * len(self.dataset))
         test_size = len(self.dataset) - train_size
 
-        train_set, test_set = random_split(
-            self.dataset,
-            [train_size, test_size],
-            generator=torch.Generator().manual_seed(42)
-        )
+        train_set, test_set = random_split(self.dataset, [train_size, test_size])
+
 
         # DataLoaders
         loader_train = DataLoader(train_set, batch_size=128, shuffle=True)
