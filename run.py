@@ -1,5 +1,6 @@
-import numpy as np
 import random
+
+import numpy as np
 import torch
 
 from pacman_module.pacman import runGame
@@ -8,17 +9,16 @@ from pacman_module.ghostAgents import SmartyGhost
 from architecture import PacmanNetwork
 from pacmanagent import PacmanAgent
 
-
-SEED = 42
+SEED = 128
 random.seed(SEED)
 np.random.seed(SEED)
+torch.manual_seed(SEED)
 
-path_to_saved_model = ".pth"
-
-# Feel free to add code here depending on your implementation
+path_to_saved_model = "pacman_model.pth"
 
 model = PacmanNetwork()
-model.load_state_dict(torch.load(path_to_saved_model, map_location="cpu"))
+state_dict = torch.load(path_to_saved_model, weights_only=True)
+model.load_state_dict(state_dict)
 model.eval()
 
 pacman_agent = PacmanAgent(model)
@@ -33,5 +33,4 @@ score, elapsed_time, nodes = runGame(
     hiddenGhosts=False,
 )
 
-print(f"Score: {score}")
-print(f"Computation time: {elapsed_time}")
+print(f"Computation time: {elapsed_time:.3f}")
